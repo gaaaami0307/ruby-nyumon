@@ -15,3 +15,8 @@ post '/todos' do
   @todos = DB.execute('SELECT * FROM todos')
   erb :todos
 end
+
+get '/todos/:id/edit' do
+  @todo = DB.execute('SELECT * FROM todos WHERE id = ?',[params[:id]]).first
+  erb :edit
+end
