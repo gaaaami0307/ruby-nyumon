@@ -1,6 +1,8 @@
 <ul>
   <% @todos.each do |task| %>
-    <li><%= task[1] %></li>
+    <li>
+    <a href="/todos/<%= task[0] %>/edit"> <%= task[1] %> </a>
+    </li>
   <% end %>
 </ul>
 
