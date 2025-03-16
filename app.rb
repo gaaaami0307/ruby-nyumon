@@ -44,3 +44,9 @@ post '/api/todos' do
   response=DB.execute('SELECT * FROM todos WHERE title=?',title).last
   JSON.pretty_generate(response)
 end
+
+get '/api/todos/:id' do
+  content_type :json
+  response=DB.execute('SELECT * FROM todos WHERE id=?',[params[:id]]).last
+  JSON.pretty_generate(response)
+end
