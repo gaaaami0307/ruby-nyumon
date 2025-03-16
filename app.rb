@@ -50,3 +50,11 @@ get '/api/todos/:id' do
   response=DB.execute('SELECT * FROM todos WHERE id=?',[params[:id]]).last
   JSON.pretty_generate(response)
 end
+
+put '/api/todos/:id' do
+  content_type :json
+  title = params[:title]
+  DB.execute('UPDATE todos SET title = ? WHERE id = ?',[title,params[:id]])
+  response=DB.execute('SELECT * FROM todos WHERE id=?',[params[:id]]).last
+  JSON.pretty_generate(response)
+end
