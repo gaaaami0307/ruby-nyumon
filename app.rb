@@ -1,4 +1,10 @@
 require 'sinatra'
+require 'sinatra/activerecord'
+require './models/todo'
+
+ActiveRecord::Base.establish_connection(
+  YAML.load_file('config/database.yml')[ENV['RACK_ENV'] || 'development']
+)
 
 get '/' do
   'Hello, World!'
@@ -6,62 +12,81 @@ end
 
 require './db/todos'
 get '/todos' do
-  @todos = DB.execute('SELECT * FROM todos')
+  @todos = Todo.all
   erb :todos
 end
 
 post '/todos' do
-  DB.execute('INSERT INTO todos (title) VALUES (?)', [params[:title]])
+  todo=Todo.new
+  todo.title=params[:title];
+  todo.save
   redirect '/todos'
 end
 
 get '/todos/:id/edit' do
-  @todo = DB.execute('SELECT * FROM todos WHERE id = ?',[params[:id]]).first
+  @todo = Todo.find(params[:id])
   erb :edit
 end
 
 put '/todos/:id' do
-  DB.execute('UPDATE todos SET title = ? WHERE id = ?',[params[:title],params[:id]])
+  todo=Todo.find_by(id:params[:id])
+  #DB.execute('UPDATE todos SET title = ? WHERE id = ?',[params[:title],params[:id]])
+  todo.title=params[:title]
+  todo.save
   redirect '/todos'
 end
 
 delete '/todos/:id' do
-  DB.execute('DELETE FROM todos WHERE id = ?',[params[:id]])
+  #DB.execute('DELETE FROM todos WHERE id = ?',[params[:id]])
+  todo=Todo.find_by(id:params[:id])
+  todo.delete
   redirect '/todos'
 end
 
 get '/api/todos' do
   content_type :json
-  todos=DB.execute('SELECT * FROM todos')
-  JSON.pretty_generate(todos)
+  todos = Todo.all
+  response = todos.map { |todo| { id: todo.id, title: todo.title } }
+  JSON.pretty_generate(response)
 end
 
 #titleを受け取る
 post '/api/todos' do
   content_type :json
   title = params[:title]
-  DB.execute('INSERT INTO todos (title) VALUES (?)',title)
-  response=DB.execute('SELECT * FROM todos WHERE title=?',title).last
+  todo=Todo.new
+  todo.title=params[:title];
+  todo.save
+  #DB.execute('INSERT INTO todos (title) VALUES (?)',title)
+  response={id: todo.id, title: todo.title}
   JSON.pretty_generate(response)
 end
 
 get '/api/todos/:id' do
   content_type :json
-  response=DB.execute('SELECT * FROM todos WHERE id=?',[params[:id]]).last
+  #response=DB.execute('SELECT * FROM todos WHERE id=?',[params[:id]]).last
+  todos = Todo.find(params[:id])
+  response = todos.map { |todo| { id: todo.id, title: todo.title } }
   JSON.pretty_generate(response)
 end
 
 put '/api/todos/:id' do
   content_type :json
-  title = params[:title]
-  DB.execute('UPDATE todos SET title = ? WHERE id = ?',[title,params[:id]])
-  response=DB.execute('SELECT * FROM todos WHERE id=?',[params[:id]]).last
+  todo=Todo.find_by(id:params[:id])
+  #DB.execute('UPDATE todos SET title = ? WHERE id = ?',[params[:title],params[:id]])
+  todo.title=params[:title]
+  todo.save
+  #DB.execute('UPDATE todos SET title = ? WHERE id = ?',[title,params[:id]])
+  #response=DB.execute('SELECT * FROM todos WHERE id=?',[params[:id]]).last
+  response={id: todo.id, title: todo.title}
   JSON.pretty_generate(response)
 end
 
 delete '/api/todos/:id' do
   content_type :json
-  DB.execute('DELETE FROM todos WHERE id = ?',[params[:id]])
+  #DB.execute('DELETE FROM todos WHERE id = ?',[params[:id]])
+  todo=Todo.find_by(id:params[:id])
+  todo.delete
   response={
     "message": "TODO deleted"
   }

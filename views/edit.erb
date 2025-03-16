@@ -1,12 +1,12 @@
 <h1>TODO の編集</h1>
 
-<form action="/todos/<%= @todo[0] %>" method="POST">
+<form action="/todos/<%= @todo.id %>" method="POST">
   <input type="hidden" name="_method" value="PUT">
-  <input type="text" name="title" value="<%= @todo[1] %>">
+  <input type="text" name="title" value="<%= @todo.title %>">
   <input type="submit" value="更新">
 </form>
 
-<form action="/todos/<%= @todo[0] %>" method="POST">
+<form action="/todos/<%= @todo.id %>" method="POST">
   <input type="hidden" name="_method" value="DELETE">
   <input type="submit" value="削除">
 </form>
