@@ -12,8 +12,7 @@ end
 
 post '/todos' do
   DB.execute('INSERT INTO todos (title) VALUES (?)', [params[:title]])
-  @todos = DB.execute('SELECT * FROM todos')
-  erb :todos
+  redirect '/todos'
 end
 
 get '/todos/:id/edit' do
@@ -21,8 +20,7 @@ get '/todos/:id/edit' do
   erb :edit
 end
 
-put '/todos/:id/edit' do
-  DB.execute('UPDATE todos SET title = (?) WHERE id = :id',[params[:title]])
-  @todos = DB.execute('SELECT * FROM todos')
-  erb :todos
+put '/todos/:id' do
+  DB.execute('UPDATE todos SET title = ? WHERE id = ?',[params[:title],params[:id]])
+  redirect '/todos'
 end
