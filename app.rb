@@ -2,6 +2,8 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require './models/todo'
 
+set :bind, '0.0.0.0'
+
 ActiveRecord::Base.establish_connection(
   YAML.load_file('config/database.yml')[ENV['RACK_ENV'] || 'development']
 )
