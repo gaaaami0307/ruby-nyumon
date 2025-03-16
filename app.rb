@@ -58,3 +58,12 @@ put '/api/todos/:id' do
   response=DB.execute('SELECT * FROM todos WHERE id=?',[params[:id]]).last
   JSON.pretty_generate(response)
 end
+
+delete '/api/todos/:id' do
+  content_type :json
+  DB.execute('DELETE FROM todos WHERE id = ?',[params[:id]])
+  response={
+    "message": "TODO deleted"
+  }
+  JSON.pretty_generate(response)
+end
